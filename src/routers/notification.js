@@ -60,7 +60,7 @@ router.get("/notifications/:id", async (req, res) => {
     // })
 })
 
-router.patch("/tasks/:id", async (req, res) => {
+router.patch("/notifications/:id", async (req, res) => {
 
     const updates = Object.keys(req.body);
     const allowedUpdates = ["template", "subject"];
@@ -85,7 +85,7 @@ router.patch("/tasks/:id", async (req, res) => {
     }
 });
 
-router.delete("/tasks/:id", async (req, res) => {
+router.delete("/notifications/:id", async (req, res) => {
     try{
         const notification = await Notification.findOneAndDelete({ _id: req.params.id });
         if (!notification) return res.status(404).send();

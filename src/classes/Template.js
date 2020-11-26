@@ -33,18 +33,12 @@ class Template
         })
     
         try{
-            console.log("before save");
             await template.save();
-            console.log("after save");
         }
         catch(e){
-            console.log("error in save");
             console.log(e);
         }
     }
 }
-console.log("hello world");
-const newtemplate = new Template("new entry", ["username", "password", "and so on"], "this is content {username}, {password}, {so on}");
-console.log(newtemplate.getPlaceholders());
-newtemplate.save();
+
 module.exports.Template = Template;

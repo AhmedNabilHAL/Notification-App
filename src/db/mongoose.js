@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGOODB_URL, {
+mongoose.connect("mongodb://127.0.0.1:27017/notification-manager-api", {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,

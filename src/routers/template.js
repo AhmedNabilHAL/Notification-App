@@ -1,28 +1,24 @@
 const express = require("express");
-const Template = require("../models/template");
-
+const NotificationTemplate = require("../models/NotificationTemplate");
+const MemoryNotificationTemplateDataAccessLayer = require("../classes/MemoryNotificationTemplateDataAccessLayer");
 const router = new express.Router();
 
+const memoryNotifcationTemplateDataAccessLayer = new MemoryNotificationTemplateDataAccessLayer;
 router.post("/templates", async (req, res) => {
     
-    const template = new Template({
+    const template = new NotificationTemplate({
         ...req.body
     })
 
-    try{
-        await template.save();
+    if (await memoryNotifcationTemplateDataAccessLayer.addTemplate(template))
         res.status(201).send(template);
-    }
-    catch(e){
-        console.log(e);
+    else
         res.status(400).send(e);
-    }
 })
 
 router.get("/templates", async (req, res) => {
     try{
-        const templates = await Template.find({});
-        console.log(templates);
+        const templates = await memoryNotifcationTemplateDataAccessLayer.getTemplates();
         res.send(templates);
     }
     catch (e){ 
@@ -38,7 +34,7 @@ router.get("/templates", async (req, res) => {
 router.get("/templates/:id", async (req, res) => {
     const _id = req.params.id;
     try{
-        const template = await Template.findOne({ _id });
+        const template = await memoryNotifcationTemplateDataAccessLayer.getTemplate(_id);
         console.log(template);
         if (!template) return res.status(404).send();
 
@@ -60,9 +56,9 @@ router.get("/templates/:id", async (req, res) => {
 
 router.patch("/templates/:id", async (req, res) => {
 
-    const updates = Object.keys(req.body);
-    const allowedUpdates = ["action", "content", "placeholders"];
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+    const updates = req.body;
+    const allowedUpdates = ["subject", "content", "language"];
+    const isValidOperation = Object.keys(updates).every((update) => allowedUpdates.includes(update));
     
     if (!isValidOperation) {
         return res.status(400).send({error: "Invalid updates!" });
@@ -71,12 +67,12 @@ router.patch("/templates/:id", async (req, res) => {
     try{
         // const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
         // const task = await Task.findById(_id);
-        const template = await Template.findOne({ _id: req.params.id });
-        if (!template) return res.status(404).send();
-        updates.forEach((update) => template[update] = req.body[update]);
-        await template.save();
-        console.log(template);
-        res.send(template);
+        if (await memoryNotifcationTemplateDataAccessLayer.updateTemplate(req.params.id, updates)){
+            res.send();
+        }
+        else{
+            return res.status(404).send();
+        }
     }
     catch(e){
         res.status(400).send();
@@ -85,13 +81,22 @@ router.patch("/templates/:id", async (req, res) => {
 
 router.delete("/templates/:id", async (req, res) => {
     try{
-        const template = await Template.findOneAndDelete({ _id: req.params.id });
-        if (!template) return res.status(404).send();
-        console.log("DELETED!");
-        console.log(template);
-        res.send(template);
+        if (await memoryNotifcationTemplateDataAccessLayer.deleteTemplate(req.params.id))
+            return res.status(200).send();
+
+        return res.status(404).send();
     }
     catch(e){
+        res.status(500).send(e);
+    }
+})
+
+router.post("/templates/search", async (req, res) => {
+    try{
+        const templates = await memoryNotifcationTemplateDataAccessLayer.searchTemplates(req.body["searchCriteria"], req.body["searchTerm"]);
+        res.send(templates);
+    }
+    catch (e){ 
         res.status(500).send(e);
     }
 })

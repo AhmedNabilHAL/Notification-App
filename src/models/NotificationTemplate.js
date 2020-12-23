@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { ObjectID } = require("mongodb");
 
 const templateSchema = new mongoose.Schema({
-    action: {
+    subject: {
         type: String,
         trim: true,
         required: true
@@ -12,11 +12,11 @@ const templateSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    placeholders: [{
+    language: {
         type: String,
         trim: true,
         required: true
-    }]
+    }
 });
-const Template = mongoose.model("Template", templateSchema);
-module.exports = Template;
+const NotificationTemplate = mongoose.model("NotificationTemplate", templateSchema);
+module.exports = NotificationTemplate;

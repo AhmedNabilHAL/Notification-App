@@ -1,10 +1,10 @@
 const express = require("express");
 require ("./db/mongoose");
-const templateRouter = require("./routers/template");
+const {router} = require("./routers/template");
 
 const app = express();
 
 app.use(express.json());
-app.use(templateRouter);
+app.use(router);
 
 module.exports = app;

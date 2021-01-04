@@ -1,24 +1,16 @@
-const notificationQueue = [];
 class Notification{
-    constructor(to, notificationTemplate){
-        this.to = to;
-        this.notificationTemplate = notificationTemplate;
+    constructor(address, notification){
+        this.address = address;
+        this.notification = notification;
     }
 
-    add(){
-        notificationQueue.push(this);
+    getAddress(){
+        return this.address;
     }
-}
 
-const send = () => {
-    if (notificationQueue.length > 0){
-        const emailContent = notificationQueue[0];
-        // send email using emailContent.to, emailContent.notificationTemplate
-        notificationQueue.shift();
+    getNotification(){
+        return this.notification
     }
 }
 
-module.exports = {
-    Notification,
-    send
-}
+module.exports = Notification;

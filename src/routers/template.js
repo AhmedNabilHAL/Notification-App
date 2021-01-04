@@ -1,6 +1,7 @@
 const express = require("express");
 const NotificationTemplate = require("../models/NotificationTemplate");
 const MemoryNotificationTemplateDataAccessLayer = require("../classes/MemoryNotificationTemplateDataAccessLayer");
+const send = require("../classes/NotificationManager");
 const router = new express.Router();
 
 const memoryNotifcationTemplateDataAccessLayer = new MemoryNotificationTemplateDataAccessLayer;
@@ -101,4 +102,37 @@ router.post("/templates/search", async (req, res) => {
     }
 })
 
-module.exports = router;
+router.post("/notifications/send", async (req, res) => {
+    try{
+        
+        const requiredKeys = ["templateId", "placeholders", "address", "channel"];
+        const valid = true;
+        requiredKeys.forEach((key) => {
+            if (!(key in req.body)) valid = false;
+        });
+
+        if (!valid) return res.status(400).send({error: "missing paramaters!"});
+        if (!(req.body["channel"] === "mail" || req.body["channel"] === "SMS")) return res.status(400).send({error: "wrong channel!"});
+        
+        const _id = req.body["templateId"];
+        const template = await memoryNotifcationTemplateDataAccessLayer.getTemplate(_id);
+        if (!template) return res.status(404).send("template not found!");
+        
+        const notification = send({
+            template,
+            placeholders: req.body["placeholders"],
+            address: req.body["address"],
+            channel: req.body["channel"]
+        })
+        console.log(notification);
+        if (notification.error) return res.status(notification.errorCode).send(notification);
+        res.status(200).send(notification);
+    }
+    catch(e){
+        res.status(400).send(e);
+    }
+})
+// module.exports = router;
+module.exports = {
+    router
+};

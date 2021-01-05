@@ -1,7 +1,7 @@
 const express = require("express");
 const NotificationTemplate = require("../models/NotificationTemplate");
 const MemoryNotificationTemplateDataAccessLayer = require("../classes/MemoryNotificationTemplateDataAccessLayer");
-const send = require("../classes/NotificationManager");
+const {send} = require("../classes/NotificationManager");
 const router = new express.Router();
 
 const memoryNotifcationTemplateDataAccessLayer = new MemoryNotificationTemplateDataAccessLayer;

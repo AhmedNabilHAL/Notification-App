@@ -1,5 +1,14 @@
-const notificationQueueEmail = [], notificationQueueSMS = [];
-const Notification = require("./Notification");
+let notificationQueueEmail = [], notificationQueueSMS = [];
+const Notification = require("../models/Notification");
+const populateQueues = async () =>{
+    try{
+        notificationQueueSMS = await Notification.find({channel:"SMS"}).sort("_id");
+        notificationQueueEmail = await Notification.find({channel:"mail"}).sort("_id");
+    }
+    catch(e){
+        console.log(e);
+    }
+}
 const send = (body) => { // enqueue
     const placeholders = body.placeholders;
     const template = body.template;
@@ -19,7 +28,12 @@ const send = (body) => { // enqueue
     }
 
     template.content = str;
-    const notification = new Notification(address, template);
+    const notification = new Notification({
+        address,
+        channel,
+        notification: template
+    });
+    notification.save();
     if (channel === "mail"){
         notificationQueueEmail.push(notification)
     }
@@ -31,4 +45,4 @@ const send = (body) => { // enqueue
 }
 
 
-module.exports = send;
+module.exports = {send, populateQueues};

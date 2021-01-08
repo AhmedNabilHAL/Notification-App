@@ -35,6 +35,7 @@ const send = (body) => { // enqueue
     });
     notification.save();
     if (channel === "mail"){
+        /* We must check if the notification is worked or not */
         notificationQueueEmail.push(notification)
     }
     else{

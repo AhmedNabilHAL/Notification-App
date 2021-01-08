@@ -12,6 +12,10 @@ const notificationSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
+    sentStatus:{
+        type: Boolean,
+        required: true
+    },
     notification:{
         _id: {
             type: String

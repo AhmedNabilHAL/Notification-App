@@ -1,4 +1,4 @@
-const { check } = require("./INotificationManager");
+const { check } = require("./INotificationGateWay");
 let notificationQueueEmail = [], notificationQueueSMS = [];
 const Notification = require("../models/Notification");
 const populateQueues = async () =>{
@@ -32,11 +32,10 @@ const send = (body) => { // enqueue
     const notification = new Notification({
         address,
         channel,
+        sentStatus: true,
         notification: template
     });
-    if(check(notification)===false){
-         return {error: "could not send mail" , errorCode: 502};
-    }
+    notification.sentStatus = check(notification);
     notification.save();
     if (channel === "mail"){
         /* We must check if the notification is worked or not */
